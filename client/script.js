@@ -20,6 +20,8 @@ function loader(element) {
   }, 300);
 }
 
+
+
 function typeText(element, text) {
   let index = 0;
 
@@ -57,34 +59,32 @@ function chatStripe(isAi, value, uniqueId) {
     `;
 }
 const handleSubmit = async (e) => {
-  e.preventDefault();
+  e.preventDefault()
 
-  const data = new FormData(form);
+  const data = new FormData(form)
 
   // user's chatstripe
-  chatContainer.innerHTML += chatStripe(false, data.get("prompt"));
+  chatContainer.innerHTML += chatStripe(false, data.get('prompt'))
 
-  // to clear the textarea input
-  form.reset();
+  // to clear the textarea input 
+  form.reset()
 
   // bot's chatstripe
-  const uniqueId = generateUniqueId();
-  chatContainer.innerHTML += chatStripe(true, " ", uniqueId);
+  const uniqueId = generateUniqueId()
+  chatContainer.innerHTML += chatStripe(true, " ", uniqueId)
 
-  // to focus scroll to the bottom
+  // to focus scroll to the bottom 
   chatContainer.scrollTop = chatContainer.scrollHeight;
 
-  // specific message div
-  const messageDiv = document.getElementById(uniqueId);
+  // specific message div 
+  const messageDiv = document.getElementById(uniqueId)
 
   // messageDiv.innerHTML = "..."
-  loader(messageDiv);
-
-  // fetch data from server
+  loader(messageDiv)
 
   const response = await fetch("http://localhost:5000", {
     method: "POST",
-    header: {
+    headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
@@ -92,23 +92,21 @@ const handleSubmit = async (e) => {
     }),
   });
 
-  clearInterval(loadInterval);
-  messageDiv.innerHTML = "";
+  clearInterval(loadInterval)
+  messageDiv.innerHTML = " "
+
   if (response.ok) {
-    const data = await response.json();
-    const parsedData = data.bot.trim();
+      const data = await response.json();
+      const parsedData = data.bot.trim() // trims any trailing spaces/'\n' 
 
-    typeText(messageDiv, parsedData);
+      typeText(messageDiv, parsedData)
   } else {
-    const err = await response.json();
+      const err = await response.text()
 
-    messageDiv.innerHTML = "Something went wrong !!";
+      messageDiv.innerHTML = "Something went wrong"
+      alert(err)
   }
-
-  alert(err);
-
-  window.alert("it is seems that backend isn't working !!");
-};
+}
 
 form.addEventListener("submit", handleSubmit);
 form.addEventListener("keyup", (e) => {
